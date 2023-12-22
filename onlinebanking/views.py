@@ -13,6 +13,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain.prompts import ChatPromptTemplate
 from dotenv import load_dotenv
 import os
+from datetime import datetime, timedelta, timezone
 load_dotenv()
 
 from langchain.schema import (
@@ -197,6 +198,7 @@ def landing(request):
 
             new_description = f"Payment to {payment_form.cleaned_data['target_bank']} | {payment_form.cleaned_data['target_account']}. {new_transaction.description}"
             new_transaction.description = new_description
+            new_transaction.transaction_date = datetime.now(tz=timezone.utc)
             new_transaction.save()
 
         if transfer_form.is_valid():
@@ -209,6 +211,8 @@ def landing(request):
             new_outbound_transfer.closing_balance = new_outbound_transfer.opening_balance - new_outbound_transfer.transaction_value
             new_outbound_description = f"Outbound transfer to {transfer_form.cleaned_data['target_account']}. {transfer_form.cleaned_data['description']}"
             new_outbound_transfer.description = new_outbound_description
+            new_outbound_transfer.transaction_date = datetime.now(tz=timezone.utc)
+
             new_outbound_transfer.save()
 
             # work out the closing balance for the target account and save the record
@@ -223,6 +227,7 @@ def landing(request):
             new_inbound_transfer.bank_account = transfer_form.cleaned_data['target_account']
             new_inbound_transfer.transaction_type = transfer_form.cleaned_data['transaction_type']
             new_inbound_transfer.transaction_category = transfer_form.cleaned_data['transaction_category']
+            new_inbound_transfer.transaction_date = datetime.now(tz=timezone.utc)
             new_inbound_transfer.save()
 
     payment_form = AccountTransactionForm()
