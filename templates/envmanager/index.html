@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<div class="container text-left">
+  <div class="row align-items-top">
+    <div class="col-4">
+        <div class="accordion" id="dataManagement">
+            <div class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                  Data management
+              </button>
+            </div>
+            <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#dataManagement">
+                <div class="accordion-body">
+                    <ul class="list-group">
+                        <li class="list-group-item"><a href="/envmanager/clear_data">clear all data</a></li>
+                        <li class="list-group-item"><a href="/envmanager/generate_data">generate new data</a></li>
+                        <li class="list-group-item"><a href="/envmanager/export">export to elastic</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="accordion" id="clusterManagement">
+            <div class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                  Elastic cluster management
+              </button>
+            </div>
+            <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#clusterManagement">
+                <div class="accordion-body">
+                    <ul class="list-group">
+                        <li class="list-group-item"><a href="/envmanager/cluster">add/update cluster details</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+{% if view_name == 'clear_data' %}
+    <div class="container text-left card">
+        <div class="card-body">
+            <ul class="list-group">
+                <li class="list-group-item">{{ bank_account_count }} bank accounts</li>
+                <li class="list-group-item">{{ customer_count }} customers</li>
+                <li class="list-group-item">{{ customer_address_count }} customer addresses</li>
+                <li class="list-group-item">{{ account_transactions_count }} transactions</li>
+                <li class="list-group-item">{{ retailer_count }} retailers</li>
+                <li class="list-group-item">{{ es_record_count }} records in Elasticsearch</li>
+            </ul>
+            {% if customer_count > 0 %}
+                Do you want to delete all the data listed above?
+                <form method="post" action="{% url 'clear_data' %}">
+                    {% csrf_token %}
+                    <div class="form-check form-switch">
+                      <input name="delete" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                      <label class="form-check-label" for="flexSwitchCheckDefault">Nuke it!</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+{% elif view_name == 'generate_data' %}
+     <div class="container text-left card">
+        <div class="card-body">
+            <h5>Specify your input variables here:</h5>
+            <form method="post" action="{% url 'action' %}">
+                {% csrf_token %}
+                <div class="row g-3 align-items-left">
+                  <div class="col-md-2">
+                    <label for="numberCustomers" class="col-form-label">Number of customers</label>
+                  </div>
+                  <div class="col-md-1">
+                    <input type="number" value="10" name="number_of_customers" id="numberCustomers" class="form-control" min="10" max="100" required>
+                  </div>
+                  <div class="col-md-2">
+                    <label for="numberMonths" class="col-form-label"># months</label>
+                  </div>
+                  <div class="col-md-1">
+                    <input type="number" value="1" name="number_of_months" id="numberMonths" class="form-control" min="1" max="3" required>
+                  </div>
+                </div>
+                <pre></pre>
+                <div class="row g-3 align-items-left">
+                  <div class="col-md-2">
+                    <label for="transactionRangeMin" class="col-form-label">Min # transactions/day</label>
+                  </div>
+                  <div class="col-md-1">
+                    <input type="number" value="3" id="transactionRangeMin" name="transaction_minimum" class="form-control" min="0" max="5" required>
+                  </div>
+                  <div class="col-md-2">
+                    <label for="transactionRangeMax" class="col-form-label">Max # transactions/day</label>
+                  </div>
+                  <div class="col-md-1">
+                    <input type="number" value="10" id="transactionRangeMax" name="transaction_maximum" class="form-control" min="5" max="10" required>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

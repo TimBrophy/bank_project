@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Transactions{% endblock %}
+{% block content %}
+<div class="container text-left">
+    <table class="head fs-6 fw-light">
+        <thead>
+            <th scope="col" width="10%">Date</th>
+            <th scope="col" width="20%">Account</th>
+            <th scope="col">Description</th>
+            <th scope="col" width="10%">Value</th>
+            <th scope="col" width="10%">Opening balance</th>
+            <th scope="col" width="10%">Closing balance</th>
+        </thead>
+        <tbody class="table-hover align-top">
+            {% for t in transaction_list %}
+            <tr>
+                <td>{{ t.transaction_date|date:"d/m/y" }}</td>
+                <td>{{ t.bank_account }}</td>
+                <td>{{ t.description }}</td>
+                <td>{{ t.transaction_value }}</td>
+                <td>{{ t.opening_balance }}</td>
+                <td>{{ t.closing_balance }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}

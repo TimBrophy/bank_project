@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<div class="containertext-left">
+    <div class="row align-items-top">
+      <div class="card-body">
+          {% if record_count > 0 %}
+            Please confirm that the following will be exported to Elasticsearch:
+            <pre></pre>
+            <ul class="list-group">
+                <li class="list-group-item">Number of transactions: {{ record_count }}</li>
+            </ul>
+            <pre></pre>
+            <h5>Please note that this can take a long time. Don't click twice.</h5>
+          {% else %}
+            <h5>All records have been imported.</h5>
+          {% endif %}
+      </div>
+    </div>
+    <pre></pre>
+    <div class="row align-items-top">
+      <div class="card-body">
+      <form method="post" action="{% url 'export' %}">
+          {% csrf_token %}
+          <input type="text" name="command_name" value="elastic_export" hidden>
+          <button type="submit" class="btn btn-primary">Export</button>
+      </form>
+      </div>
+    </div>
+    {% if streaming_content != 0 %}
+        <div class="row align-items-top">
+            <div class="card-body">
+            {% for line in streaming_content %}
+                {{ line|safe }}
+            {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
